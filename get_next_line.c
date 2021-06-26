@@ -2,7 +2,7 @@
 
 char	*get_save(char *save)
 {
-	char	*rtn;
+	char	*res;
 	int		i;
 	int		j;
 
@@ -17,77 +17,93 @@ char	*get_save(char *save)
 		free(save);
 		return (0);
 	}
-	if (!(rtn = malloc(sizeof(char) * ((ft_strlen(save) - i) + 1))))
+	res = ft_malloc(sizeof(char) * ((ft_strlen(save) - i) + 1));
+	if (!res)
 		return (0);
 	i++;
 	while (save[i])
-		rtn[j++] = save[i++];
-	rtn[j] = '\0';
+		res[j++] = save[i++];
+	res[j] = '\0';
 	free(save);
-	return (rtn);
+	return (res);
 }
 
-char	*get_line(char *str)
+char	*get_line(char *line)
 {
 	int		i;
-	char	*rtn;
+	char	*res;
 
 	i = 0;
-	if (!str)
+	if (!line)
 		return (0);
-	while (str[i] && str[i] != '\n')
+	while (line[i] && line[i] != '\n')
 		i++;
-	if (!(rtn = malloc(sizeof(char) * (i + 1))))
+	res = ft_malloc(sizeof(char) * (i + 1));
+	if (!res)
 		return (0);
 	i = 0;
-	while (str[i] && str[i] != '\n')
+	while (line[i] && line[i] != '\n')
 	{
-		rtn[i] = str[i];
+		res[i] = line[i];
 		i++;
 	}
-	rtn[i] = '\0';
-	return (rtn);
+	res[i] = '\0';
+	return (res);
 }
 
 int	get_next_line(int fd, char **line)
 {
 	char			*buff;
 	static char		*save;
-	int				reader;
+	int				bytes_read;
 
-	reader = 1;
+	bytes_read = 1;
 	if (fd < 0 || !line || BUFFER_SIZE <= 0)
 		return (-1);
-	if (!(buff = malloc(sizeof(char) * (BUFFER_SIZE + 1))))
+	buff = ft_malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buff)
 		return (-1);
-	while (!has_return(save) && reader != 0)
-	{
-		if ((reader = read(fd, buff, BUFFER_SIZE)) == -1)
-		{
-			free(buff);
-			return (-1);
-		}
-		buff[reader] = '\0';
-		save = join_str(save, buff);
-	}
+	// while (!has_newline(save) && bytes_read != 0)
+	// {
+	// 	bytes_read = read(fd, buff, BUFFER_SIZE);
+	// 	if (bytes_read == -1)
+	// 	{
+	// 		free(buff);
+	// 		return (-1);
+	// 	}
+	// 	buff[bytes_read] = '\0';
+	// 	save = strjoin(save, buff);
+	// }
+	bytes_read = read_and_join(fd, &save, buff);
 	free(buff);
+	if (bytes_read == -1)
+		return (-1);
+	//printf("1%s\n", save);
 	*line = get_line(save);
+	//printf("2%s", *line);
 	save = get_save(save);
-	if (reader == 0)
+	//printf("3%s\n", save);
+	//getchar();
+	if (bytes_read == 0)
 		return (0);
 	return (1);
 }
 
-int	main(void)
-{
-	char	*line;
-	int		fd;
+// int	main(void)
+// {
+// 	char 	*line;
+// 	int		fd;
 
-	fd = open("text.txt", O_RDONLY);
-	get_next_line(fd, &line);
-	printf("%s\n\n", line);
-	get_next_line(fd, &line);
-	printf("%s\n\n", line);
-	get_next_line(fd, &line);
-	printf("%s\n\n", line);
-}
+// 	fd = open("text.txt", O_RDONLY);
+// 	get_next_line(fd, &line);
+// 	printf("%s", line);
+// 	free(line);
+// 	get_next_line(fd, &line);
+// 	printf("%s", line);
+// 	free(line);
+// 	get_next_line(fd, &line);
+// 	printf("%s", line);
+// 	free(line);
+
+// 	return (0);
+// }
