@@ -51,6 +51,22 @@ char	*get_line(char *line)
 	return (res);
 }
 
+int	read_and_join(int fd, char **remainder, char *buff)
+{
+	int	bytes_read;
+
+	bytes_read = 1;
+	while (0 == ft_strchr(*remainder, '\n') && bytes_read > 0)
+	{
+		bytes_read = read(fd, buff, BUFFER_SIZE);
+		if (bytes_read == -1)
+			return (-1);
+		buff[bytes_read] = '\0';
+		*remainder = strjoin(*remainder, buff);
+	}
+	return (bytes_read);
+}
+
 int	get_next_line(int fd, char **line)
 {
 	char			*buff;
@@ -63,47 +79,13 @@ int	get_next_line(int fd, char **line)
 	buff = ft_malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buff)
 		return (-1);
-	// while (!has_newline(save) && bytes_read != 0)
-	// {
-	// 	bytes_read = read(fd, buff, BUFFER_SIZE);
-	// 	if (bytes_read == -1)
-	// 	{
-	// 		free(buff);
-	// 		return (-1);
-	// 	}
-	// 	buff[bytes_read] = '\0';
-	// 	save = strjoin(save, buff);
-	// }
 	bytes_read = read_and_join(fd, &save, buff);
 	free(buff);
 	if (bytes_read == -1)
 		return (-1);
-	//printf("1%s\n", save);
 	*line = get_line(save);
-	//printf("2%s", *line);
 	save = get_save(save);
-	//printf("3%s\n", save);
-	//getchar();
 	if (bytes_read == 0)
 		return (0);
 	return (1);
 }
-
-// int	main(void)
-// {
-// 	char 	*line;
-// 	int		fd;
-
-// 	fd = open("text.txt", O_RDONLY);
-// 	get_next_line(fd, &line);
-// 	printf("%s", line);
-// 	free(line);
-// 	get_next_line(fd, &line);
-// 	printf("%s", line);
-// 	free(line);
-// 	get_next_line(fd, &line);
-// 	printf("%s", line);
-// 	free(line);
-
-// 	return (0);
-// }

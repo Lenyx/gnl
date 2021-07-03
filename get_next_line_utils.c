@@ -29,22 +29,6 @@ size_t	ft_strlen(const char *s)
 	return (i);
 }
 
-int	has_newline(char *str)
-{
-	int		i;
-
-	i = 0;
-	if (!str)
-		return (0);
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (1);
-		i++;
-	}	
-	return (0);
-}
-
 void	*ft_memmove(void *dst, const void *src, size_t len)
 {
 	char	*d;
@@ -85,22 +69,6 @@ char	*strjoin(char const *s1, char const *s2)
 	res[all_len - 1] = '\0';
 	free((char *)s1);
 	return (res);
-}
-
-int	read_and_join(int fd, char **remainder, char *buff)
-{
-	int	bytes_read;
-
-	bytes_read = 1;
-	while (0 == ft_strchr(*remainder, '\n') && bytes_read > 0)
-	{
-		bytes_read = read(fd, buff, BUFFER_SIZE);
-		if (bytes_read == -1)
-			return (-1);
-		buff[bytes_read] = '\0';
-		*remainder = strjoin(*remainder, buff);
-	}
-	return (bytes_read);
 }
 
 char	*ft_strchr(const char *s, int c)
